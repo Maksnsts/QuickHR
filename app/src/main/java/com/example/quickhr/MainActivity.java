@@ -127,8 +127,11 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     Toast.makeText(MainActivity.this, "new Connection", Toast.LENGTH_LONG).show();
-                    usersDb.child(snapshot.getKey()).child("connections").child("matches").child(currentUId).setValue(true);
-                    usersDb.child(currentUId).child("connections").child("matches").child(snapshot.getKey()).setValue(true);
+
+                    String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey(); // fot chat
+                    usersDb.child(snapshot.getKey()).child("connections").child("matches").child(currentUId).child("ChatId").setValue(key); // chat
+                    usersDb.child(currentUId).child("connections").child("matches").child(snapshot.getKey()).child("ChatId").setValue(key);
+
                 }
             }
 
@@ -178,17 +181,18 @@ public class MainActivity extends AppCompatActivity {
         usersDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-                if(snapshot.exists() && !snapshot.child("connections").child("nope").hasChild(currentUId)
-                                     && !snapshot.child("connections").child("yeps").hasChild(currentUId)
-                                     && snapshot.child("type").getValue().toString().equals(oppositeUserType)){
-                    String profileImageUrl = "default";
-                    if(!snapshot.child("profileImageUrl").getValue().equals("default")){
-                        profileImageUrl = snapshot.child("profileImageUrl").getValue().toString();
+                if (snapshot.child("type").getValue() != null) {
+                    if (snapshot.exists() && !snapshot.child("connections").child("nope").hasChild(currentUId)
+                            && !snapshot.child("connections").child("yeps").hasChild(currentUId)
+                            && snapshot.child("type").getValue().toString().equals(oppositeUserType)) {
+                        String profileImageUrl = "default";
+                        if (!snapshot.child("profileImageUrl").getValue().equals("default")) {
+                            profileImageUrl = snapshot.child("profileImageUrl").getValue().toString();
+                        }
+                        Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl);
+                        rowItems.add(item);
+                        MyArrayAdapter.notifyDataSetChanged();
                     }
-                    Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl);
-                    rowItems.add(item);
-                    MyArrayAdapter.notifyDataSetChanged();
                 }
             }
 
