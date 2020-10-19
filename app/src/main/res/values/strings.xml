@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">QuickHR</string>
+    <string name="signout">SignOut</string>
+</resources>
