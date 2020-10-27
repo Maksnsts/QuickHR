@@ -11,9 +11,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.quickhr.Authentication.LoginActivity;
 import com.example.quickhr.Cards.Cards;
 import com.example.quickhr.Cards.MyArrayAdapter;
 import com.example.quickhr.Matches.MatchesActivity;
+import com.example.quickhr.Settings.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -177,6 +179,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private String checkLastName, checkPhone, profileImageUrl;
     public void getOppositeTypeUsers(){
         usersDb.addChildEventListener(new ChildEventListener() {
             @Override
@@ -185,12 +189,25 @@ public class MainActivity extends AppCompatActivity {
                     if (snapshot.exists() && !snapshot.child("connections").child("nope").hasChild(currentUId)
                             && !snapshot.child("connections").child("yeps").hasChild(currentUId)
                             && snapshot.child("type").getValue().toString().equals(oppositeUserType)) {
-                        String profileImageUrl = "default";
+
+                        profileImageUrl = "default";
                         if (!snapshot.child("profileImageUrl").getValue().equals("default")) {
                             profileImageUrl = snapshot.child("profileImageUrl").getValue().toString();
                         }
-                        Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl);
-                        rowItems.add(item);
+
+                        if(snapshot.child("lastName").getValue() == null){
+                            checkLastName = "No Last Name was provided";
+                        }else checkLastName = snapshot.child("lastName").getValue().toString();
+
+                        if(snapshot.child("phone").getValue() == null){
+                            checkPhone = "No phone was provided";
+                        }else checkPhone = snapshot.child("phone").getValue().toString();
+
+
+                            Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl, checkPhone, checkLastName);
+                            rowItems.add(item);
+
+                        // step 3
                         MyArrayAdapter.notifyDataSetChanged();
                     }
                 }
@@ -218,9 +235,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     public void logoutUser(View view) {
         mAuth.signOut();
-        Intent intent = new Intent(MainActivity.this, ChooseLoginRegistrationActivity.class);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

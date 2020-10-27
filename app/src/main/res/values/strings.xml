@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">QuickHR</string>
     <string name="signout">SignOut</string>
+    <string name="log_in">Log in</string>
+    
+    <string-array name="country">
+        <item>Poland</item>
+        <item>Russia</item>
+        <item>Ukraine</item>
+        <item>USA</item>
+    </string-array>
+
 </resources>

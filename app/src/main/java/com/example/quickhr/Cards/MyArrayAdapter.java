@@ -31,9 +31,16 @@ public class MyArrayAdapter extends android.widget.ArrayAdapter {
         }
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
+        TextView phone = (TextView) convertView.findViewById(R.id.phone); // step 2
+        TextView lastName = (TextView) convertView.findViewById(R.id.last_name);
+
         ImageView image = (ImageView) convertView.findViewById(R.id.image);
 
+
         name.setText(cardsItem.getName());
+        phone.setText(cardsItem.getPhone());
+        lastName.setText(cardsItem.getLastName());
+
         switch(cardsItem.getProfileImageUrl()){
             case "default":
                 //image.setImageResource(R.mipmap.ic_launcher);
