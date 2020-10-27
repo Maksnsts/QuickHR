@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+//
     private String checkLastName, checkPhone, profileImageUrl;
     public void getOppositeTypeUsers(){
         usersDb.addChildEventListener(new ChildEventListener() {
