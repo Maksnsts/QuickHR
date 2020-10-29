@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 //
-    private String checkLastName, checkPhone, profileImageUrl;
+    private String checkLastName, checkPhone, profileImageUrl, checkEmail, checkCountry, checkCity, checkSkills, checkExperience, checkSwitch;
     public void getOppositeTypeUsers(){
         usersDb.addChildEventListener(new ChildEventListener() {
             @Override
@@ -189,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
                     if (snapshot.exists() && !snapshot.child("connections").child("nope").hasChild(currentUId)
                             && !snapshot.child("connections").child("yeps").hasChild(currentUId)
                             && snapshot.child("type").getValue().toString().equals(oppositeUserType)) {
+
+
+                        getCheckParametersForCards(snapshot);
 
                         profileImageUrl = "default";
                         if (!snapshot.child("profileImageUrl").getValue().equals("default")) {
@@ -203,8 +206,32 @@ public class MainActivity extends AppCompatActivity {
                             checkPhone = "No phone was provided";
                         }else checkPhone = snapshot.child("phone").getValue().toString();
 
+                        if(snapshot.child("email").getValue() == null){
+                            checkEmail = "No email was provided";
+                        }else checkEmail = snapshot.child("email").getValue().toString();
 
-                            Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl, checkPhone, checkLastName);
+                        if(snapshot.child("country").getValue() == null){
+                            checkCountry = "No country was provided";
+                        }else checkCountry = snapshot.child("country").getValue().toString();
+
+                        if(snapshot.child("city").getValue() == null){
+                            checkCity = "No city was provided";
+                        }else checkCity = snapshot.child("city").getValue().toString();
+
+                        if(snapshot.child("skills").getValue() == null){
+                            checkSkills = "No skills was provided";
+                        }else checkSkills = snapshot.child("skills").getValue().toString();
+
+                        if(snapshot.child("experience").getValue() == null){
+                            checkExperience = "No experience was provided";
+                        }else checkExperience = snapshot.child("experience").getValue().toString();
+
+                        if(snapshot.child("switch").getValue() == null){
+                            checkSwitch = "false";
+                        }else checkSwitch = snapshot.child("switch").getValue().toString();
+
+
+                            Cards item = new Cards(snapshot.getKey(), snapshot.child("name").getValue().toString(), profileImageUrl, checkPhone, checkLastName, checkEmail, checkCountry, checkCity, checkSkills, checkExperience, "", checkSwitch );
                             rowItems.add(item);
 
                         // step 3
@@ -233,6 +260,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private String getCheckParametersForCards(DataSnapshot snapshot) {
+        return "";
     }
 
 

@@ -80,16 +80,21 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="10sp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="10sp"
                 android:text="Select country : " />
             <Spinner
                 android:id="@+id/spinner_country"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20sp"
-                android:hint="Country" />
+                android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/city"
@@ -99,17 +104,34 @@
                 android:background="@null"
                 android:hint="City" />
 
+            <EditText
+                android:id="@+id/display_skills"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Skills"
+                android:background="@null"
+                android:layout_marginBottom="10sp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Write your knowledge of languages ​​programming, technology, tools : " />
-            <EditText
-                android:id="@+id/skills"
+                android:text="Write your knowledge of languages ​​programming, technology, tools : "
+                android:textSize="10sp"/>
+            <SearchView
+                android:id="@+id/searchView_skills"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5sp"
-                android:hint="Skills"
-                android:background="@null" />
+                android:hint="Select here your skills"
+                android:iconifiedByDefault="false"
+                android:imeOptions="actionDone"
+                android:background="@null" >
+            </SearchView>
+
+            <ListView
+                android:id="@+id/listView_skills"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="2dp"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -125,11 +147,13 @@
                     android:background="@null"
                     android:hint="Experience" />
 
-                <RadioButton
+                <Switch
+                    android:id="@+id/switch1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.1"
-                    android:text="Commercial experience" />
+                    android:text="@string/commercial_experience"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
 
             </LinearLayout>
 

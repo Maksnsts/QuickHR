@@ -14,9 +14,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -37,20 +42,30 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private EditText mNameField, mPhoneField, mLastName;
+    private EditText mNameField, mPhoneField, mLastName, mEmail, mCity, mSkills, mExperience;
     private Button mBack, mConfirm;
     private ImageView mProfileImage;
     private Spinner mCountrySpinner;
+    private Switch mSwitch;
+
+    //skills
+    private EditText mDisplaySkills;
+    private SearchView mSearchViewSkills;
+    private ListView mListViewSkills;
+    List<String> list;
+    ArrayAdapter<String> adapter;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDatabase;
-
-    private String userId, name, phone, profileImageUrl, userType, lastName;
+    private String userId, name, phone, profileImageUrl, userType, lastName, email, country, city, skills, experience, switch1;
 
     private Uri resultUri;
 
@@ -68,10 +83,20 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         mNameField = (EditText) findViewById(R.id.name);
         mPhoneField = (EditText) findViewById(R.id.phone);
         mLastName = (EditText) findViewById(R.id.lastName);
+        mEmail = (EditText) findViewById(R.id.email);
+        mCity = (EditText) findViewById(R.id.city);
+        mExperience = (EditText) findViewById(R.id.experience);
+        mSwitch = (Switch) findViewById(R.id.switch1);
+        mCountrySpinner = (Spinner) findViewById(R.id.spinner_country); // add spinner
+
         mBack = (Button) findViewById(R.id.back);
         mConfirm = (Button) findViewById(R.id.confirm);
         mProfileImage = (ImageView) findViewById(R.id.profileImage);
-        mCountrySpinner = (Spinner) findViewById(R.id.spinner_country); // add spinner
+
+        //skills
+        mSearchViewSkills = (SearchView) findViewById(R.id.searchView_skills);
+        mListViewSkills = (ListView) findViewById(R.id.listView_skills);
+        mDisplaySkills = (EditText) findViewById(R.id.display_skills);
 
         //pdf
         editPDFName = (EditText) findViewById(R.id.txt_pdfName);
@@ -92,6 +117,18 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         getUserInfo();
 
         getAdapterSpinnerCountry();
+
+        addListViewSkillsItems();
+
+        /*mSearchViewSkills.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+
+
+        });*/
+
 
         mProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,9 +151,66 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             @Override
             public void onClick(View view) {
                 finish();
-                return;
             }
         });
+
+        //switch
+
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                Map<String, Object> newSwitch = new HashMap<String, Object>();
+                String result;
+                if(isChecked){
+                    result = "true";
+                }else {
+                    result = "false";
+                }
+                newSwitch.put("switch", result);
+                mUserDatabase.updateChildren(newSwitch);
+                }
+
+        });
+    }
+
+    private void addListViewSkillsItems() {
+        list = new ArrayList<String>();
+
+        list.add("java");
+        list.add("Spring");
+        list.add("C#");
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+
+        mSearchViewSkills.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                mListViewSkills.setAdapter(adapter);
+                adapter.getFilter().filter(s);
+
+                //adapter.getFilter();
+
+                return false;
+            }
+        });
+
+        mListViewSkills.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                String sNumber = adapterView.getItemAtPosition(position).toString();
+                mDisplaySkills.append(sNumber.toUpperCase() + "  ");
+
+            }
+        });
+
+
 
     }
 
@@ -144,7 +238,7 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                         Uri url = uri.getResult();
 
                         UploadPDF uploadPDF = new UploadPDF(editPDFName.getText().toString(), url.toString());
-                        mUserDatabase.child("pdf").child(mUserDatabase.push().getKey()).setValue(uploadPDF);
+                        mUserDatabase.child("pdf").setValue(uploadPDF);
                         Toast.makeText(SettingsActivity.this, "File Uploaded", Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
@@ -179,6 +273,36 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                         lastName = map.get("lastName").toString();
                         mLastName.setText(lastName);
                     }
+                    if (map.get("email") != null){
+                        email = map.get("email").toString();
+                        mEmail.setText(email);
+                    }
+                    if (map.get("country") != null){
+                        country = map.get("country").toString();
+                        mCountrySpinner.getSelectedItem().toString();
+                    }
+                    if (map.get("city") != null){
+                        city = map.get("city").toString();
+                        mCity.setText(city);
+                    }
+                    if (map.get("skills") != null){
+                        skills = map.get("skills").toString();
+                        mDisplaySkills.setText(skills);
+                    }
+                    if (map.get("experience") != null){
+                        experience = map.get("experience").toString();
+                        mExperience.setText(experience);
+                    }
+
+                    if(map.get("switch") != null){
+                        if(Objects.equals(map.get("switch"), "true")) {
+                            mSwitch.setChecked(true);
+                        }else {
+                            mSwitch.setChecked(false);
+                        }
+                    }
+
+
                     //Glide.clear(mProfileImage);
                     if (map.get("profileImageUrl") != null) {  // Display profile image with Glide
                         profileImageUrl = map.get("profileImageUrl").toString();
@@ -207,11 +331,22 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         name = mNameField.getText().toString();
         phone = mPhoneField.getText().toString();
         lastName = mLastName.getText().toString();
+        email = mEmail.getText().toString();
+        country = mCountrySpinner.getSelectedItem().toString();
+        city = mCity.getText().toString();
+        skills = mDisplaySkills.getText().toString();
+        experience = mExperience.getText().toString();
 
-        Map userInfo = new HashMap();
+
+        Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("name", name);  // to add name in map
         userInfo.put("phone", phone); // to add phone in map
         userInfo.put("lastName", lastName);
+        userInfo.put("email", email);
+        userInfo.put("country", country);
+        userInfo.put("city", city);
+        userInfo.put("skills", skills);
+        userInfo.put("experience", experience);
         mUserDatabase.updateChildren(userInfo);  // Save map with name and phone
 
         //image
@@ -256,6 +391,8 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         } else {
             finish();
         }
+
+
 
     }
 

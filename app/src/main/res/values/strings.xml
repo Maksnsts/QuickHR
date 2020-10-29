@@ -2,7 +2,9 @@
     <string name="app_name">QuickHR</string>
     <string name="signout">SignOut</string>
     <string name="log_in">Log in</string>
-    
+    <string name="commercial_experience">Commercial experience</string>
+    <string name="country">Country</string>
+
     <string-array name="country">
         <item>Poland</item>
         <item>Russia</item>
